@@ -48,14 +48,14 @@ export function FeaturedCollections() {
           </Link>
         </div>
 
-        <div className="mt-10 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:grid-rows-2">
+        <div className="mt-10 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:grid-rows-2 lg:h-[580px]">
           {collections.map((col) => (
             <Link
               key={col.title}
               href={col.href}
               className={`group relative overflow-hidden rounded-2xl bg-forest-dark ${col.span}`}
             >
-              <div className="relative h-64 w-full lg:h-full">
+              <div className="relative h-64 w-full lg:h-full min-h-[260px]">
                 <Image
                   src={col.image}
                   alt={col.title}
