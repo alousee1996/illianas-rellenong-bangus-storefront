@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Illiana's Rellenong Bangus — A Family Recipe Since 1962</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Playfair Display"', 'Georgia', 'serif'],
+          serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          cream: '#faf6ef',
+          'cream-dark': '#f3ece0',
+          forest: '#0f3d3e',
+          'forest-light': '#1a5556',
+          'forest-dark': '#0a2a2b',
+          gold: '#c9a961',
+          'gold-light': '#d9be7d',
+          'gold-dark': '#a8893f',
+          charcoal: '#1c1917',
+          stone: '#57534e',
+          bone: '#e7e0d3',
+        },
+      },
+    },
+  };
+</script>
+<style>
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes slideInRight { from { transform: translateX(100%) } to { transform: translateX(0) } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.96) } to { opacity: 1; transform: scale(1) } }
+  .animate-fade-in { animation: fadeIn 0.6s ease-out forwards }
+  .animate-fade-up { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards }
+  .animate-slide-in-right { animation: slideInRight 0.4s cubic-bezier(0.16,1,0.3,1) forwards }
+  .animate-scale-in { animation: scaleIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards }
+  .scrollbar-hide::-webkit-scrollbar { display: none }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none }
+  html { scroll-behavior: smooth }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #faf6ef; color: #1c1917; -webkit-font-smoothing: antialiased }
+  h1,h2,h3,h4,h5,h6 { font-family: 'Playfair Display', Georgia, serif; font-weight: 600; letter-spacing: -0.01em }
+  ::selection { background: #c9a961; color: #0a2a2b }
+  .product-img { display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden }
+  .product-img::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15), transparent 60%) }
+</style>
+</head>
+<body class="bg-cream text-charcoal">
+
+<div id="app"></div>
+
+<script>
+// ─────────────────────────────────────────────
+// MOCK DATA — realistic products, prices, reviews
+// ─────────────────────────────────────────────
+const PRODUCTS = [
+  { id: 1, name: 'Classic Rellenong Bangus', slug: 'classic-rellenong-bangus', tagline: 'The original. The one that started it all.',
+    description: 'Our signature deboned milkfish, hand-stuffed with a savory blend of ground pork, carrots, raisins, and our family\'s secret sofrito. Slow-marinated for 24 hours, then gently pan-fried to golden perfection. This is the recipe Illiana\'s grandmother perfected in 1962 — unchanged, unreplicated, unforgettable.',
+    story: 'Three generations of women have guarded this recipe. Illiana learned it at her grandmother\'s elbow in a small kitchen in Malabon, where the smell of garlic and fried fish meant Sunday was coming. Today, she makes it the same way: by hand, with patience, with love.',
+    price: 695, compareAt: 795, emoji: '🐟', gradient: 'linear-gradient(135deg, #1a5556, #0f3d3e)',
+    category: 'Whole Fish', tags: ['Bestseller', 'Family Recipe', 'No Preservatives'], featured: true, bestseller: true,
+    stock: 48, servings: '4–5 servings', weight: '800g', shelfLife: '5 days refrigerated, 3 months frozen', spiceLevel: 0, rating: 4.9, reviewsCount: 5 },
+  { id: 2, name: 'Spicy Rellenong Bangus', slug: 'spicy-rellenong-bangus', tagline: 'For those who like it hot.',
+    description: 'Everything you love about our Classic, but with a fiery kick. We fold freshly crushed bird\'s eye chili (siling labuyo) into the stuffing, then glaze the fish in a chili-garlic oil before frying. The heat builds slowly — first on the lips, then in the chest.',
+    story: 'Illiana\'s cousin Mateo kept asking for "something with a bite." After seventeen attempts, this was the one that made him speechless.',
+    price: 745, emoji: '🌶️', gradient: 'linear-gradient(135deg, #8b3a2e, #5c1a1b)',
+    category: 'Whole Fish', tags: ['Spicy', 'Limited Batch'], featured: false, bestseller: false,
+    stock: 24, servings: '4–5 servings', weight: '800g', shelfLife: '5 days refrigerated, 3 months frozen', spiceLevel: 3, rating: 4.7, reviewsCount: 3 },
+  { id: 3, name: 'Rellenong Bangus con Queso', slug: 'rellenong-bangus-con-queso', tagline: 'Molten cheese meets savory fish.',
+    description: 'A luxurious twist on the classic. We stuff our milkfish with a blend of sharp cheddar and creamy quick-melt cheese alongside the traditional savory filling. When sliced, the cheese flows like lava. Best served warm, with rice that catches every drop.',
+    story: 'Inspired by the stuffed cheeses of Pampanga, this version was born on a rainy afternoon when Illiana ran out of pork and improvised with what was in the fridge.',
+    price: 795, emoji: '🧀', gradient: 'linear-gradient(135deg, #c9a961, #a8893f)',
+    category: 'Whole Fish', tags: ['Bestseller', 'Cheese', 'Family Favorite'], featured: true, bestseller: true,
+    stock: 36, servings: '4–5 servings', weight: '850g', shelfLife: '5 days refrigerated, 3 months frozen', spiceLevel: 0, rating: 4.8, reviewsCount: 3 },
+  { id: 4, name: 'Rellenong Bangus sa Hipon', slug: 'rellenong-bangus-sa-hipon', tagline: 'Surf meets stuffed.',
+    description: 'Plump, sweet tiger shrimp folded into our traditional milkfish stuffing. The shrimp stay tender and juicy inside the fish, releasing their briny sweetness into every bite. A celebration of the Philippine coast, on a plate.',
+    story: 'The shrimp come from a small co-op in Bais, Negros Oriental — the same waters Illiana\'s grandfather fished as a boy.',
+    price: 895, compareAt: 995, emoji: '🦐', gradient: 'linear-gradient(135deg, #d97757, #b85c3e)',
+    category: 'Whole Fish', tags: ['Premium', 'Seafood', 'Sustainable'], featured: true, bestseller: false,
+    stock: 18, servings: '4–5 servings', weight: '900g', shelfLife: '4 days refrigerated, 3 months frozen', spiceLevel: 0, rating: 5.0, reviewsCount: 3 },
+  { id: 5, name: 'Rellenong Bangus Lumpia', slug: 'rellenong-bangus-lumpia', tagline: 'Crispy. Dippable. Dangerous.',
+    description: 'All the flavor of our classic rellenong bangus, wrapped in a delicate lumpia wrapper and fried to a shatter-crisp golden brown. Perfect for parties, merienda, or a midnight snack. Comes with our house-made sweet chili garlic dipping sauce.',
+    story: 'Illiana\'s kids wanted rellenong bangus "to go." So she rolled it. The lumpia version became an instant hit at every family gathering.',
+    price: 495, emoji: '🥟', gradient: 'linear-gradient(135deg, #b8860b, #8b6914)',
+    category: 'Lumpia & Snacks', tags: ['Bestseller', 'Party Favorite', 'Kid-Approved'], featured: false, bestseller: true,
+    stock: 60, servings: '12 pieces', weight: '500g', shelfLife: '5 days refrigerated, 4 months frozen', spiceLevel: 1, rating: 4.8, reviewsCount: 4 },
+  { id: 6, name: 'The Illiana Gift Set', slug: 'illiana-gift-set', tagline: 'A taste of home, beautifully boxed.',
+    description: 'Our complete collection in one elegant box: one Classic Rellenong Bangus, one con Queso, one sa Hipon, and a dozen lumpia — paired with our house sweet chili sauce, spiced vinegar, and a jar of Illiana\'s signature calamansi concentrate.',
+    story: 'The gift set was our first product sold outside the family. Every box is still packed by hand, by Illiana herself.',
+    price: 2495, compareAt: 2890, emoji: '🎁', gradient: 'linear-gradient(135deg, #0f3d3e, #0a2a2b)',
+    category: 'Gift Sets', tags: ['Bestseller', 'Gift', 'Complete Collection'], featured: true, bestseller: true,
+    stock: 12, servings: '12–15 servings', weight: '3.2kg', shelfLife: '5 days refrigerated, 3 months frozen', spiceLevel: 0, rating: 5.0, reviewsCount: 3 },
+];
+
+const REVIEWS = {
+  1: [
+    { author: 'Maricar Reyes', location: 'Quezon City', rating: 5, title: 'Tastes exactly like Lola\'s', body: 'I cried when I took the first bite. It\'s been 12 years since my grandmother passed, and this tastes exactly like hers. The stuffing is perfectly seasoned and the fish stays moist. Worth every peso.', verified: true, date: '2026-06-15' },
+    { author: 'James Tan', location: 'Makati', rating: 5, title: 'Best rellenong bangus in Metro Manila', body: 'I\'ve tried every rellenong bangus in the city. Nothing comes close to Illiana\'s. The balance of sweet and savory is perfect.', verified: true, date: '2026-06-10' },
+    { author: 'Patricia Lim', location: 'Pasig', rating: 4, title: 'Delicious but small portions', body: 'Flavor is incredible — the sofrito really comes through. Wish the fish was a bit bigger for the price, but the quality is there.', verified: true, date: '2026-05-28' },
+    { author: 'Ricardo Santos', location: 'Cavite', rating: 5, title: 'Sunday lunch staple', body: 'Been ordering every Sunday for six months. Never disappoints. Always arrives fresh, always beautifully packed.', verified: true, date: '2026-05-20' },
+    { author: 'Anna Cruz', location: 'BGC', rating: 5, title: 'Perfect for Noche Buena', body: 'Ordered three for Christmas Eve. The whole family was impressed. Illiana even included a handwritten card.', verified: true, date: '2026-05-12' },
+  ],
+  2: [
+    { author: 'Mark Villanueva', location: 'Manila', rating: 5, title: 'Finally, some heat!', body: 'I love spicy food and most Filipino dishes are too mild for me. This one hits perfectly — the labuyo gives a real kick.', verified: true, date: '2026-06-08' },
+    { author: 'Bea Mendoza', location: 'San Juan', rating: 4, title: 'Spicy but could be spicier', body: 'Really enjoyed it, the chili flavor is great. For serious heat lovers, I wish it was even hotter. Still top-notch quality.', verified: true, date: '2026-05-30' },
+    { author: 'Carlos Aquino', location: 'Mandaluyong', rating: 5, title: 'The chili garlic oil glaze is genius', body: 'That finishing glaze is what makes this. The chili oil soaks into the stuffing as it cooks. Best spicy rellenong bangus I\'ve had.', verified: true, date: '2026-05-18' },
+  ],
+  3: [
+    { author: 'Sophia Garcia', location: 'Alabang', rating: 5, title: 'The cheese pull is unreal', body: 'I bought this for my kids and they lost their minds. The cheese oozes out when you slice it. Already ordered another.', verified: true, date: '2026-06-12' },
+    { author: 'Diego Ramos', location: 'Parañaque', rating: 5, title: 'Decadent and worth it', body: 'This is the rellenong bangus you serve at dinner parties. Looks impressive, tastes even better. Illiana, you\'ve outdone yourself.', verified: true, date: '2026-06-02' },
+    { author: 'Liezl Domingo', location: 'Taguig', rating: 4, title: 'Rich, maybe too rich', body: 'Incredibly delicious but very filling — a little goes a long way. Perfect for sharing.', verified: true, date: '2026-05-22' },
+  ],
+  4: [
+    { author: 'Francis Co', location: 'Makati', rating: 5, title: 'Worth the splurge', body: 'Yes it\'s pricey, but you can taste the quality. The shrimp are sweet and fresh, not rubbery. A celebration dish.', verified: true, date: '2026-06-05' },
+    { author: 'Mira Bautista', location: 'Quezon City', rating: 5, title: 'My birthday order', body: 'Ordered this for my birthday dinner instead of cake. Best decision. The shrimp flavor permeates the whole stuffing.', verified: true, date: '2026-05-25' },
+    { author: 'Tony Ocampo', location: 'Pasay', rating: 5, title: 'Restaurant quality at home', body: 'I used to order rellenong bangus at fancy restaurants. Now I just order from Illiana. Better than anything I\'ve had.', verified: true, date: '2026-05-15' },
+  ],
+  5: [
+    { author: 'Rina Flores', location: 'Manila', rating: 5, title: 'Dangerous party snack', body: 'Brought these to a party and they vanished in five minutes. The wrapper shatters when you bite into it. The sweet chili dip is the perfect partner.', verified: true, date: '2026-06-14' },
+    { author: 'Kevin Chua', location: 'Makati', rating: 5, title: 'My kids\' new favorite', body: 'Three kids, twelve lumpia, gone in one merienda. They don\'t even know they\'re eating fish. Brilliant.', verified: true, date: '2026-06-01' },
+    { author: 'Gemma Torres', location: 'Cainta', rating: 4, title: 'Great but wish there were more', body: 'Delicious, perfectly crispy, the dipping sauce is amazing. Only complaint: twelve pieces isn\'t enough!', verified: true, date: '2026-05-19' },
+    { author: 'Noah Villamor', location: 'Antipolo', rating: 5, title: 'Better than lumpiang shanghai', body: 'Controversial take but I stand by it. The bangus filling is more flavorful than the usual pork shanghai.', verified: true, date: '2026-05-10' },
+  ],
+  6: [
+    { author: 'Josephine Ong', location: 'Singapore', rating: 5, title: 'Sent to my family abroad', body: 'Shipped this to my mom in Singapore and she cried. The packaging was beautiful, the food arrived fresh, and the handwritten note made her feel at home.', verified: true, date: '2026-06-11' },
+    { author: 'Ramon Aquino', location: 'Davao', rating: 5, title: 'Perfect corporate gift', body: 'Ordered 15 for our top clients. Every single one sent a thank you message. The box is gorgeous, the food is exceptional.', verified: true, date: '2026-05-27' },
+    { author: 'Christine Uy', location: 'Cebu', rating: 5, title: 'A gift that keeps giving', body: 'Bought this for my in-laws for their anniversary. They\'ve been eating rellenong bangus for 40 years and said this was the best they\'ve ever had.', verified: true, date: '2026-05-14' },
+  ],
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+const state = {
+  cart: JSON.parse(localStorage.getItem('illiana-cart') || '[]'),
+  cartOpen: false,
+  view: 'home', // home | shop | product | checkout | confirmation
+  activeProduct: null,
+  shopFilters: { category: 'All', price: '', tags: [], sort: 'featured', q: '' },
+  checkout: { step: 1, orderNumber: '' },
+  productModal: null,
+  reviewFormOpen: false,
+  submittedReview: null,
+};
+
+function saveCart() {
+  localStorage.setItem('illiana-cart', JSON.stringify(state.cart));
+  render();
+}
+
+function addToCart(productId, qty = 1) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  if (!product || product.stock <= 0) return;
+  const existing = state.cart.find(i => i.productId === productId);
+  if (existing) {
+    existing.quantity += qty;
+  } else {
+    state.cart.push({ productId, slug: product.slug, name: product.name, price: product.price, emoji: product.emoji, gradient: product.gradient, quantity: qty });
+  }
+  state.cartOpen = true;
+  saveCart();
+}
+
+function removeFromCart(productId) {
+  state.cart = state.cart.filter(i => i.productId !== productId);
+  saveCart();
+}
+
+function updateQty(productId, qty) {
+  if (qty <= 0) return removeFromCart(productId);
+  const item = state.cart.find(i => i.productId === productId);
+  if (item) { item.quantity = qty; saveCart(); }
+}
+
+const cartCount = () => state.cart.reduce((s, i) => s + i.quantity, 0);
+const cartSubtotal = () => state.cart.reduce((s, i) => s + i.price * i.quantity, 0);
+const fmt = (n) => '₱' + n.toLocaleString('en-PH');
+
+// ─────────────────────────────────────────────
+// ICONS (inline SVG)
+// ─────────────────────────────────────────────
+const icons = {
+  bag: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>',
+  menu: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>',
+  x: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>',
+  search: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>',
+  arrow: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"/></svg>',
+  star: '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24"><path fill="currentColor" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>',
+  trash: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>',
+  plus: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>',
+  minus: '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>',
+  check: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>',
+  truck: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-6m6 0V21m-6-2.25v.01M16.5 7.5l-1.767-1.767c-.469-.469-1.124-.72-1.812-.72H6.375c-.621 0-1.125.504-1.125 1.125v9.75c0 .621.504 1.125 1.125 1.125h.375"/></svg>',
+  shield: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>',
+  leaf: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>',
+  clock: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+  award: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0a3.375 3.375 0 00-3.375-3.375h-.375a3.375 3.375 0 010-6.75h.375a3.375 3.375 0 003.375 3.375M7.5 9.75h.375a3.375 3.375 0 010 6.75h-.375"/></svg>',
+  flame: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.362-6.386z"/></svg>',
+  users: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>',
+  scale: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0012 4.5c-2.291 0-4.545.138-6.75.47m13.5 0c1.01.143 2.011.313 3 .51m-3-3.51c.499.083 1 .164 1.5.24m-1.5-.24c-.499.083-1 .164-1.5.24m0 0c-2.145.36-4.207.96-6.155 1.785M3.75 4.97c.499.083 1 .164 1.5.24m0 0c2.145.36 4.207.96 6.155 1.785M3.75 4.97c-.499.083-1 .164-1.5.24"/></svg>',
+  quote: '<svg class="w-5 h-5 text-gold/50" fill="currentColor" viewBox="0 0 24 24"><path d="M9.13 8.585c-.41-.41-.99-.645-1.62-.645-.63 0-1.21.235-1.62.645-.41.41-.645.99-.645 1.62 0 .63.235 1.21.645 1.62.41.41.99.645 1.62.645.63 0 1.21-.235 1.62-.645l.5-.5v3.5c0 2.21-1.79 4-4 4v-2c1.1 0 2-.9 2-2v-.13c-.47.08-.95.13-1.42.13-1.04 0-2.04-.41-2.78-1.14C2.09 12.46 1.5 11.04 1.5 9.5c0-1.54.59-2.96 1.66-4.03C4.23 4.4 5.65 3.81 7.19 3.81c1.54 0 2.96.59 4.03 1.66l1.06 1.06-1.06 1.06-1.09.995zM22.63 8.585c-.41-.41-.99-.645-1.62-.645-.63 0-1.21.235-1.62.645-.41.41-.645.99-.645 1.62 0 .63.235 1.21.645 1.62.41.41.99.645 1.62.645.63 0 1.21-.235 1.62-.645l.5-.5v3.5c0 2.21-1.79 4-4 4v-2c1.1 0 2-.9 2-2v-.13c-.47.08-.95.13-1.42.13-1.04 0-2.04-.41-2.78-1.14-1.07-1.07-1.66-2.49-1.66-4.03 0-1.54.59-2.96 1.66-4.03C18.23 4.4 19.65 3.81 21.19 3.81c1.54 0 2.96.59 4.03 1.66l1.06 1.06-1.06 1.06-1.09.995z"/></svg>',
+  camera: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/></svg>',
+  globe: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"/></svg>',
+  mail: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>',
+  phone: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>',
+  pin: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>',
+  wallet: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"/></svg>',
+  card: '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z"/></svg>',
+};
+
+function stars(rating, size = 'sm') {
+  const sz = size === 'xs' ? 'w-3 h-3' : size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4';
+  let html = '<div class="flex items-center gap-0.5">';
+  for (let i = 1; i <= 5; i++) {
+    const filled = i <= Math.floor(rating);
+    const half = i === Math.floor(rating) + 1 && rating - Math.floor(rating) >= 0.5;
+    html += `<svg class="${sz}" viewBox="0 0 24 24" style="color:${filled || half ? '#c9a961' : '#e7e0d3'}"><path fill="currentColor" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function render() {
+  const app = document.getElementById('app');
+  let html = renderHeader();
+  html += `<main>`;
+  if (state.view === 'home') html += renderHome();
+  else if (state.view === 'shop') html += renderShop();
+  else if (state.view === 'product') html += renderProduct();
+  else if (state.view === 'checkout') html += renderCheckout();
+  else if (state.view === 'confirmation') html += renderConfirmation();
+  html += `</main>`;
+  html += renderFooter();
+  html += renderCartDrawer();
+  app.innerHTML = html;
+  bindEvents();
+}
+
+// ── Header ──
+function renderHeader() {
+  return `
+  <header class="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-bone/50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 lg:h-20 items-center justify-between">
+        <button onclick="go('home')" class="lg:hidden p-2">${icons.menu}</button>
+        <button onclick="go('home')" class="flex flex-col items-center lg:items-start">
+          <span class="font-display text-xl lg:text-2xl text-forest leading-none">Illiana's</span>
+          <span class="font-serif text-[10px] lg:text-xs tracking-[0.25em] text-gold uppercase">Rellenong Bangus</span>
+        </button>
+        <nav class="hidden lg:flex items-center gap-8">
+          <button onclick="go('home')" class="text-sm font-medium text-stone hover:text-forest transition-colors">Home</button>
+          <button onclick="go('shop')" class="text-sm font-medium text-stone hover:text-forest transition-colors">Shop</button>
+          <button onclick="setShopFilter('category','Whole Fish'); go('shop')" class="text-sm font-medium text-stone hover:text-forest transition-colors">Whole Fish</button>
+          <button onclick="setShopFilter('category','Gift Sets'); go('shop')" class="text-sm font-medium text-stone hover:text-forest transition-colors">Gift Sets</button>
+        </nav>
+        <div class="flex items-center gap-1">
+          <button onclick="go('shop')" class="p-2.5 text-charcoal hover:text-forest transition-colors">${icons.search}</button>
+          <button onclick="toggleCart()" class="relative p-2.5 text-charcoal hover:text-forest transition-colors">
+            ${icons.bag}
+            ${cartCount() > 0 ? `<span class="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-forest px-1 text-[10px] font-bold text-cream">${cartCount()}</span>` : ''}
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>`;
+}
+
+// ── Home ──
+function renderHome() {
+  const bestsellers = PRODUCTS.filter(p => p.bestseller).slice(0, 4);
+  const featured = PRODUCTS.filter(p => p.featured)[0];
+  return `
+  <!-- Hero -->
+  <section class="relative overflow-hidden bg-forest-dark">
+    <div class="absolute inset-0" style="background: linear-gradient(135deg, #0a2a2b 0%, #0f3d3e 50%, #1a5556 100%)"></div>
+    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 50%, rgba(201,169,97,0.3), transparent 50%), radial-gradient(circle at 80% 30%, rgba(201,169,97,0.15), transparent 40%)"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 rounded-full border border-gold/30 bg-forest-dark/40 px-4 py-1.5 backdrop-blur-sm">
+          <span class="h-1.5 w-1.5 rounded-full bg-gold"></span>
+          <span class="text-xs font-medium tracking-wider text-gold uppercase">Family recipe since 1962</span>
+        </div>
+        <h1 class="mt-6 font-display text-4xl sm:text-5xl lg:text-6xl leading-[1.05] text-cream">
+          The rellenong bangus<br><span class="italic text-gold">worth passing down.</span>
+        </h1>
+        <p class="mt-6 max-w-xl text-lg leading-relaxed text-cream/70">
+          Hand-deboned milkfish, stuffed with three generations of Filipino know-how, pan-fried to golden perfection. Made fresh every Tuesday and Friday in Malabon. Delivered to your door.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <button onclick="go('shop')" class="group inline-flex items-center gap-2 rounded-full bg-gold px-7 py-3.5 text-sm font-semibold text-forest-dark transition-all hover:bg-gold-light hover:shadow-lg hover:shadow-gold/30">
+            Shop the Collection
+            <span class="transition-transform group-hover:translate-x-1">${icons.arrow}</span>
+          </button>
+          <a href="#story" class="inline-flex items-center gap-2 rounded-full border border-cream/30 px-7 py-3.5 text-sm font-medium text-cream transition-colors hover:bg-cream/10">Our Story</a>
+        </div>
+        <div class="mt-10 flex items-center gap-4">
+          <div class="flex -space-x-2">
+            ${['M','J','P','R'].map(l => `<div class="flex h-9 w-9 items-center justify-center rounded-full border-2 border-forest-dark bg-forest text-xs font-semibold text-cream">${l}</div>`).join('')}
+          </div>
+          <div>
+            ${stars(4.9)}
+            <p class="mt-0.5 text-xs text-cream/60">Loved by 3,200+ Filipino families</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 60" class="w-full" preserveAspectRatio="none"><path d="M0,40 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#faf6ef"/></svg>
+    </div>
+  </section>
+
+  <!-- Value Props -->
+  <section class="border-b border-bone bg-cream">
+    <div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 gap-6 lg:grid-cols-4 lg:gap-8">
+        ${[
+          {icon: icons.clock, title: 'Hand-Made Fresh', desc: 'Packed every Tuesday & Friday'},
+          {icon: icons.truck, title: 'Cold-Chain Delivery', desc: 'Metro Manila & nationwide'},
+          {icon: icons.leaf, title: 'No Preservatives', desc: 'Just real food, real ingredients'},
+          {icon: icons.award, title: 'Three Generations', desc: 'The same recipe since 1962'},
+        ].map(v => `
+          <div class="flex items-start gap-3">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest/8 text-forest">${v.icon}</div>
+            <div>
+              <h3 class="font-display text-sm text-charcoal">${v.title}</h3>
+              <p class="mt-0.5 text-xs text-stone">${v.desc}</p>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Collections -->
+  <section class="bg-cream py-20 lg:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">Explore the Kitchen</span>
+          <h2 class="mt-2 font-display text-3xl sm:text-4xl lg:text-5xl text-charcoal">Featured Collections</h2>
+        </div>
+        <button onclick="go('shop')" class="group inline-flex items-center gap-2 text-sm font-medium text-forest hover:text-gold transition-colors">View all products <span class="transition-transform group-hover:translate-x-1">${icons.arrow}</span></button>
+      </div>
+      <div class="mt-10 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:grid-rows-2">
+        ${[
+          {title: 'Whole Fish', desc: 'The classic. Deboned, stuffed, and pan-fried to order.', emoji: '🐟', gradient: 'linear-gradient(135deg, #1a5556, #0f3d3e)', href: "setShopFilter('category','Whole Fish'); go('shop')", span: 'lg:col-span-2 lg:row-span-2'},
+          {title: 'Lumpia & Snacks', desc: 'Crispy, dippable, gone in minutes.', emoji: '🥟', gradient: 'linear-gradient(135deg, #b8860b, #8b6914)', href: "setShopFilter('category','Lumpia & Snacks'); go('shop')", span: ''},
+          {title: 'Gift Sets', desc: 'The complete collection, beautifully boxed.', emoji: '🎁', gradient: 'linear-gradient(135deg, #0f3d3e, #0a2a2b)', href: "setShopFilter('category','Gift Sets'); go('shop')", span: ''},
+        ].map(c => `
+          <button onclick="${c.href}" class="group relative overflow-hidden rounded-2xl ${c.span}">
+            <div class="relative h-64 w-full lg:h-full product-img" style="background: ${c.gradient}">
+              <span style="font-size: 5rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3))">${c.emoji}</span>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-forest-dark/90 via-forest-dark/30 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6 lg:p-8 text-left">
+              <h3 class="font-display text-2xl lg:text-3xl text-cream">${c.title}</h3>
+              <p class="mt-1 max-w-sm text-sm text-cream/70">${c.desc}</p>
+              <span class="mt-3 inline-flex items-center gap-2 text-sm font-medium text-gold">Shop now <span class="transition-transform group-hover:translate-x-1">${icons.arrow}</span></span>
+            </div>
+          </button>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bestsellers -->
+  <section class="bg-cream py-20 lg:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">Crowd Favorites</span>
+          <h2 class="mt-2 font-display text-3xl sm:text-4xl lg:text-5xl text-charcoal">The Bestsellers</h2>
+          <p class="mt-3 max-w-md text-stone">The dishes our families order again and again. If you're new here, start with these.</p>
+        </div>
+        <button onclick="go('shop')" class="group inline-flex items-center gap-2 text-sm font-medium text-forest hover:text-gold transition-colors">See all products <span class="transition-transform group-hover:translate-x-1">${icons.arrow}</span></button>
+      </div>
+      <div class="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        ${bestsellers.map(p => renderProductCard(p)).join('')}
+      </div>
+    </div>
+  </section>
+
+  ${featured ? `
+  <!-- Spotlight -->
+  <section class="bg-cream-dark py-20 lg:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div class="relative">
+          <div class="relative aspect-[5/4] overflow-hidden rounded-2xl product-img" style="background: ${featured.gradient}">
+            <span style="font-size: 8rem; filter: drop-shadow(0 8px 24px rgba(0,0,0,0.3))">${featured.emoji}</span>
+          </div>
+        </div>
+        <div>
+          <span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">This Week's Spotlight</span>
+          <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl text-charcoal">${featured.name}</h2>
+          <p class="mt-4 text-lg italic text-stone">${featured.tagline}</p>
+          <p class="mt-4 leading-relaxed text-stone">${featured.description}</p>
+          <div class="mt-6 flex items-center gap-4">
+            <button onclick="go('product', ${featured.id})" class="inline-flex items-center gap-2 rounded-full bg-forest px-7 py-3.5 text-sm font-semibold text-cream transition-colors hover:bg-forest-dark">Shop Now ${icons.arrow}</button>
+            <span class="font-display text-2xl text-charcoal">${fmt(featured.price)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>` : ''}
+
+  <!-- Story -->
+  <section id="story" class="relative overflow-hidden bg-forest-dark py-20 lg:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div class="relative">
+          <div class="relative aspect-[4/5] overflow-hidden rounded-2xl product-img" style="background: linear-gradient(135deg, #1a5556, #0a2a2b)">
+            <span style="font-size: 6rem">👩‍🍳</span>
+          </div>
+          <div class="absolute -bottom-6 -right-4 lg:-right-6 flex h-24 w-24 flex-col items-center justify-center rounded-full bg-gold text-center shadow-xl">
+            <span class="font-display text-2xl text-forest-dark">62</span>
+            <span class="text-[9px] font-medium uppercase tracking-wider text-forest-dark">Years</span>
+          </div>
+        </div>
+        <div>
+          <span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">Our Story</span>
+          <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl leading-tight text-cream">A recipe passed<br><span class="italic text-gold">from lola to mother to me.</span></h2>
+          <div class="mt-6 space-y-4 text-cream/70">
+            <p class="leading-relaxed">In 1962, in a small kitchen in Malabon, Illiana's grandmother perfected a way to debone a milkfish without breaking the skin — then stuff it with a sofrito so fragrant the neighbors would come knocking.</p>
+            <p class="leading-relaxed">Three generations later, we still make it the same way: by hand, with patience, with the same knife her grandmother sharpened every Sunday. No preservatives. No shortcuts. Just the dish that built our family.</p>
+          </div>
+          <figure class="mt-8 border-l-2 border-gold pl-5">
+            ${icons.quote}
+            <blockquote class="mt-2 font-serif text-lg italic text-cream/90">"If the fish isn't smiling when it comes out of the pan, it's not done. That's the only rule."</blockquote>
+            <figcaption class="mt-2 text-xs tracking-wider text-cream/50 uppercase">— Illiana, founder</figcaption>
+          </figure>
+          <div class="mt-8 grid grid-cols-3 gap-4">
+            ${[{v:'3',l:'Generations'},{v:'12',l:'Steps, by hand'},{v:'24h',l:'Marinade time'}].map(s => `<div><div class="font-display text-3xl text-gold">${s.v}</div><div class="mt-1 text-xs text-cream/50">${s.l}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="bg-cream py-20 lg:py-28">
+    <div class="max-w-3xl mx-auto px-4 text-center sm:px-6 lg:px-8">
+      <span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">Join the Family Table</span>
+      <h2 class="mt-3 font-display text-3xl sm:text-4xl lg:text-5xl text-charcoal">Get 10% off your first order</h2>
+      <p class="mt-4 text-stone">Fresh-batch alerts, family recipes, and the occasional secret code. No spam — just the good stuff.</p>
+      <form onsubmit="event.preventDefault(); this.innerHTML='<div class=\\'mt-8 flex max-w-md mx-auto items-center justify-center gap-2 rounded-full bg-forest/8 px-6 py-3 text-forest\\'>${icons.check}<span class=\\'font-medium\\'>You\\'re in! Check your inbox for the code.</span></div>'" class="mt-8 mx-auto flex max-w-md flex-col sm:flex-row gap-3">
+        <input type="email" required placeholder="you@email.com" class="flex-1 rounded-full border border-bone bg-white px-5 py-3.5 text-sm outline-none focus:border-forest" />
+        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream hover:bg-forest-dark transition-colors">Subscribe ${icons.arrow}</button>
+      </form>
+    </div>
+  </section>`;
+}
+
+// ── Product Card ──
+function renderProductCard(p) {
+  const discount = p.compareAt ? Math.round(((p.compareAt - p.price) / p.compareAt) * 100) : null;
+  return `
+  <div class="group relative flex flex-col overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:shadow-xl hover:shadow-forest/5">
+    <button onclick="go('product', ${p.id})" class="relative aspect-[4/3] overflow-hidden">
+      <div class="product-img h-full w-full" style="background: ${p.gradient}">
+        <span style="font-size: 4rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3))">${p.emoji}</span>
+      </div>
+      <div class="absolute left-3 top-3 flex flex-col gap-1.5">
+        ${p.bestseller ? '<span class="rounded-full bg-forest px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-cream">Bestseller</span>' : ''}
+        ${discount ? `<span class="rounded-full bg-gold px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-forest-dark">−${discount}%</span>` : ''}
+      </div>
+      <div class="absolute inset-x-3 bottom-3 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+        <button onclick="event.stopPropagation(); addToCart(${p.id})" class="flex w-full items-center justify-center gap-2 rounded-full bg-cream/90 backdrop-blur-md px-4 py-2.5 text-sm font-medium text-forest hover:bg-forest hover:text-cream transition-colors">
+          ${icons.bag} Quick Add
+        </button>
+      </div>
+    </button>
+    <div class="flex flex-1 flex-col p-4">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-medium uppercase tracking-wider text-gold">${p.category}</span>
+        ${p.rating > 0 ? `<div class="flex items-center gap-1">${stars(p.rating,'xs')}<span class="text-xs text-stone">${p.rating.toFixed(1)}</span></div>` : ''}
+      </div>
+      <button onclick="go('product', ${p.id})" class="mt-1.5 font-display text-base leading-snug text-charcoal text-left hover:text-forest transition-colors">${p.name}</button>
+      <p class="mt-1 line-clamp-2 text-xs text-stone">${p.tagline}</p>
+      <div class="mt-3 flex items-baseline gap-2">
+        <span class="font-display text-lg text-charcoal">${fmt(p.price)}</span>
+        ${p.compareAt ? `<span class="text-sm text-stone line-through">${fmt(p.compareAt)}</span>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Shop ──
+function renderShop() {
+  const f = state.shopFilters;
+  let filtered = [...PRODUCTS];
+  if (f.category !== 'All') filtered = filtered.filter(p => p.category === f.category);
+  if (f.price) {
+    const [min, max] = f.price.split('-').map(Number);
+    filtered = filtered.filter(p => p.price >= min && p.price <= max);
+  }
+  if (f.tags.length > 0) filtered = filtered.filter(p => f.tags.every(t => p.tags.includes(t)));
+  if (f.q) {
+    const q = f.q.toLowerCase();
+    filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.tagline.toLowerCase().includes(q));
+  }
+  switch (f.sort) {
+    case 'price-asc': filtered.sort((a,b) => a.price - b.price); break;
+    case 'price-desc': filtered.sort((a,b) => b.price - a.price); break;
+    case 'rating': filtered.sort((a,b) => b.rating - a.rating); break;
+    case 'newest': filtered.reverse(); break;
+    case 'bestseller': filtered.sort((a,b) => Number(b.bestseller) - Number(a.bestseller)); break;
+  }
+  const categories = ['All', 'Whole Fish', 'Lumpia & Snacks', 'Gift Sets'];
+  const priceRanges = [{l:'Under ₱500',v:'0-500'},{l:'₱500 – ₱800',v:'500-800'},{l:'₱800 – ₱1,500',v:'800-1500'},{l:'Over ₱1,500',v:'1500-999999'}];
+  const tags = ['Bestseller','Spicy','Premium','Gift','Family Recipe','No Preservatives'];
+  return `
+  <div class="bg-cream">
+    <div class="border-b border-bone bg-cream-dark">
+      <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">The Shop</span>
+        <h1 class="mt-2 font-display text-3xl sm:text-4xl lg:text-5xl text-charcoal">${f.category !== 'All' ? f.category : 'All Products'}</h1>
+        <p class="mt-3 max-w-xl text-stone">Every product is hand-made to order. Browse our full collection, filter by what you're craving, and bring a piece of the family table home.</p>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div class="grid gap-8 lg:grid-cols-[260px_1fr]">
+        <aside class="lg:sticky lg:top-24">
+          <div class="rounded-2xl border border-bone bg-white/60 p-5 lg:p-6">
+            <h3 class="font-display text-lg text-charcoal">Filters</h3>
+            <div class="mt-5">
+              <h4 class="text-xs font-semibold uppercase tracking-wider text-stone">Category</h4>
+              <ul class="mt-2 space-y-1.5">
+                ${categories.map(c => `<li><button onclick="setShopFilter('category','${c}')" class="text-sm transition-colors ${f.category===c?'font-medium text-forest':'text-stone hover:text-charcoal'}">${c}</button></li>`).join('')}
+              </ul>
+            </div>
+            <div class="mt-6">
+              <h4 class="text-xs font-semibold uppercase tracking-wider text-stone">Price Range</h4>
+              <ul class="mt-2 space-y-1.5">
+                ${priceRanges.map(r => `<li><button onclick="setShopFilter('price','${r.v}')" class="text-sm transition-colors ${f.price===r.v?'font-medium text-forest':'text-stone hover:text-charcoal'}">${r.l}</button></li>`).join('')}
+              </ul>
+            </div>
+            <div class="mt-6">
+              <h4 class="text-xs font-semibold uppercase tracking-wider text-stone">Attributes</h4>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                ${tags.map(t => `<button onclick="toggleTag('${t}')" class="rounded-full border px-3 py-1 text-xs transition-colors ${f.tags.includes(t)?'border-forest bg-forest text-cream':'border-bone bg-white text-stone hover:border-forest hover:text-forest'}">${t}</button>`).join('')}
+              </div>
+            </div>
+          </div>
+          <p class="mt-4 px-1 text-xs text-stone">Showing ${filtered.length} ${filtered.length===1?'product':'products'}</p>
+        </aside>
+        <div>
+          <div class="mb-6 flex items-center justify-end gap-2">
+            <label class="text-sm text-stone">Sort by:</label>
+            <select onchange="setShopFilter('sort', this.value)" class="appearance-none rounded-full border border-bone bg-white py-2 pl-4 pr-10 text-sm outline-none focus:border-forest">
+              ${[{v:'featured',l:'Featured'},{v:'bestseller',l:'Bestsellers'},{v:'price-asc',l:'Price: Low to High'},{v:'price-desc',l:'Price: High to Low'},{v:'rating',l:'Top Rated'},{v:'newest',l:'Newest'}].map(s => `<option value="${s.v}" ${f.sort===s.v?'selected':''}>${s.l}</option>`).join('')}
+            </select>
+          </div>
+          ${filtered.length === 0 ? `<div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-bone py-20 text-center"><h3 class="font-display text-xl text-charcoal">No products found</h3><p class="mt-2 text-sm text-stone">Try adjusting your filters.</p></div>` : `<div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">${filtered.map(p => renderProductCard(p)).join('')}</div>`}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Product Detail ──
+function renderProduct() {
+  const p = state.activeProduct;
+  if (!p) return '<p class="p-20 text-center text-stone">Product not found.</p>';
+  const reviews = REVIEWS[p.id] || [];
+  const related = PRODUCTS.filter(r => r.category === p.category && r.id !== p.id).slice(0, 3);
+  return `
+  <div class="bg-cream">
+    <div class="border-b border-bone">
+      <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center gap-2 text-xs text-stone">
+          <button onclick="go('home')" class="hover:text-forest">Home</button><span>/</span>
+          <button onclick="go('shop')" class="hover:text-forest">Shop</button><span>/</span>
+          <button onclick="setShopFilter('category','${p.category}'); go('shop')" class="hover:text-forest">${p.category}</button><span>/</span>
+          <span class="text-charcoal">${p.name}</span>
+        </nav>
+      </div>
+    </div>
+    <section class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div class="grid gap-10 lg:grid-cols-2 lg:gap-14">
+        <!-- Gallery -->
+        <div class="lg:sticky lg:top-24">
+          <div class="relative aspect-square overflow-hidden rounded-2xl product-img" style="background: ${p.gradient}">
+            <span style="font-size: 10rem; filter: drop-shadow(0 8px 32px rgba(0,0,0,0.3))">${p.emoji}</span>
+          </div>
+          <div class="mt-4 flex gap-3">
+            ${[p.emoji, '🍽️', '📦'].map((e, i) => `<div class="relative h-20 w-20 overflow-hidden rounded-lg product-img ${i===0?'ring-2 ring-forest ring-offset-2 ring-offset-cream opacity-100':'opacity-60 hover:opacity-100'}" style="background: ${p.gradient}"><span style="font-size: 1.5rem">${e}</span></div>`).join('')}
+          </div>
+        </div>
+        <!-- Info -->
+        <div>
+          <span class="font-serif text-sm tracking-[0.2em] text-gold uppercase">${p.category}</span>
+          <h1 class="mt-2 font-display text-3xl sm:text-4xl lg:text-5xl text-charcoal">${p.name}</h1>
+          <p class="mt-3 text-lg italic text-stone">${p.tagline}</p>
+          ${p.rating > 0 ? `<div class="mt-4 flex items-center gap-3">${stars(p.rating, 'md')}<span class="text-sm text-stone">(${p.reviewsCount} ${p.reviewsCount===1?'review':'reviews'})</span></div>` : ''}
+          ${p.tags.length > 0 ? `<div class="mt-4 flex flex-wrap gap-2">${p.tags.map(t => `<span class="rounded-full bg-forest/8 px-3 py-1 text-xs font-medium text-forest">${t}</span>`).join('')}</div>` : ''}
+          <div class="mt-6">
+            <div class="flex items-baseline gap-3">
+              <span class="font-display text-3xl text-charcoal">${fmt(p.price)}</span>
+              ${p.compareAt ? `<span class="text-lg text-stone line-through">${fmt(p.compareAt)}</span>` : ''}
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-green-500"></span>
+              <span class="text-sm text-green-700">In stock — ships in 2–3 days</span>
+            </div>
+            <div class="mt-6 flex gap-3">
+              <div class="flex items-center rounded-full border border-bone bg-white">
+                <button onclick="changeQty(${p.id}, -1)" class="flex h-12 w-12 items-center justify-center text-stone hover:text-forest">${icons.minus}</button>
+                <span id="qty-${p.id}" class="min-w-10 text-center font-medium">1</span>
+                <button onclick="changeQty(${p.id}, 1)" class="flex h-12 w-12 items-center justify-center text-stone hover:text-forest">${icons.plus}</button>
+              </div>
+              <button onclick="addToCart(${p.id}, getQty(${p.id}))" class="flex flex-1 items-center justify-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-cream hover:bg-forest-dark transition-colors">${icons.bag} Add to Cart</button>
+            </div>
+            <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-bone pt-6">
+              <div class="flex items-center gap-2"><span class="text-gold">${icons.truck}</span><span class="text-xs text-stone">Cold-chain delivery</span></div>
+              <div class="flex items-center gap-2"><span class="text-gold">${icons.shield}</span><span class="text-xs text-stone">Freshness guarantee</span></div>
+              <div class="flex items-center gap-2"><span class="text-gold">${icons.leaf}</span><span class="text-xs text-stone">No preservatives</span></div>
+            </div>
+          </div>
+          <div class="mt-8 border-t border-bone pt-6">
+            <h2 class="font-display text-lg text-charcoal">About This Dish</h2>
+            <p class="mt-3 leading-relaxed text-stone">${p.description}</p>
+          </div>
+          <div class="mt-6 grid grid-cols-2 gap-4 border-t border-bone pt-6">
+            ${[{icon:icons.users,label:'Servings',value:p.servings},{icon:icons.scale,label:'Weight',value:p.weight},{icon:icons.clock,label:'Shelf Life',value:p.shelfLife}, p.spiceLevel > 0 ? {icon:icons.flame,label:'Spice Level',value:'🌶️'.repeat(p.spiceLevel)} : null].filter(Boolean).map(d => `<div class="flex items-center gap-3"><div class="flex h-10 w-10 items-center justify-center rounded-full bg-forest/8 text-forest">${d.icon}</div><div><div class="text-xs text-stone">${d.label}</div><div class="text-sm font-medium text-charcoal">${d.value}</div></div></div>`).join('')}
+          </div>
+          <div class="mt-6 rounded-2xl bg-cream-dark p-5">
+            <h3 class="font-display text-sm text-charcoal">What You Get</h3>
+            <ul class="mt-3 space-y-2">
+              ${['Hand-deboned milkfish, skin intact','House sofrito stuffing (ground pork, carrots, raisins)','Pan-fried to golden perfection','Vacuum-sealed for freshness','Comes with spiced vinegar dipping sauce'].map(i => `<li class="flex items-start gap-2 text-sm text-stone">${icons.check} ${i}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    ${p.story ? `<section class="border-t border-bone bg-cream-dark"><div class="max-w-3xl mx-auto px-4 py-16 text-center sm:px-6 lg:px-8"><span class="font-serif text-sm tracking-[0.3em] text-gold uppercase">The Story Behind This Dish</span><p class="mt-4 font-serif text-xl italic leading-relaxed text-charcoal sm:text-2xl">"${p.story}"</p></div></section>` : ''}
+    <!-- Reviews -->
+    <section class="border-t border-bone py-16 lg:py-20">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="font-display text-2xl sm:text-3xl text-charcoal">Customer Reviews</h2>
+            <div class="mt-2 flex items-center gap-3">${stars(p.rating, 'md')}<span class="text-sm text-stone">${reviews.length} ${reviews.length===1?'review':'reviews'}</span></div>
+          </div>
+          <button onclick="toggleReviewForm()" class="rounded-full border border-forest px-5 py-2.5 text-sm font-medium text-forest hover:bg-forest hover:text-cream transition-colors">Write a Review</button>
+        </div>
+        ${reviews.length > 0 ? `
+        <div class="mt-8 grid gap-8 lg:grid-cols-[200px_1fr]">
+          <div class="rounded-2xl bg-cream-dark p-5 text-center">
+            <div class="font-display text-4xl text-charcoal">${p.rating.toFixed(1)}</div>
+            ${stars(p.rating, 'sm')}
+            <p class="mt-1 text-xs text-stone">Based on ${reviews.length} reviews</p>
+          </div>
+          <div class="flex flex-col justify-center gap-1.5">
+            ${[5,4,3,2,1].map(s => { const c = reviews.filter(r => r.rating === s).length; const pct = reviews.length > 0 ? (c/reviews.length)*100 : 0; return `<div class="flex items-center gap-3"><div class="flex w-12 items-center gap-1 text-sm text-stone">${s} ${icons.star.replace('w-3.5 h-3.5','w-3 h-3').replace('currentColor','#c9a961')}</div><div class="h-2 flex-1 overflow-hidden rounded-full bg-bone"><div class="h-full rounded-full bg-gold" style="width:${pct}%"></div></div><span class="w-8 text-right text-sm text-stone">${c}</span></div>`; }).join('')}
+          </div>
+        </div>` : ''}
+        <div id="review-form" class="hidden mt-8 rounded-2xl border border-bone bg-white/60 p-6">
+          <h3 class="font-display text-lg text-charcoal">Share Your Experience</h3>
+          <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Your Name</label><input type="text" id="rv-author" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="Maria Santos" /></div>
+            <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Rating</label><div class="mt-1 flex h-[42px] items-center gap-1" id="rv-stars">${[1,2,3,4,5].map(s => `<button onclick="setReviewStar(${s})" data-star="${s}" class="p-1"><svg class="w-6 h-6" viewBox="0 0 24 24" style="color:#e7e0d3"><path fill="currentColor" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg></button>`).join('')}</div></div>
+          </div>
+          <div class="mt-4"><label class="text-xs font-medium uppercase tracking-wider text-stone">Title</label><input type="text" id="rv-title" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="Tastes like Lola's" /></div>
+          <div class="mt-4"><label class="text-xs font-medium uppercase tracking-wider text-stone">Your Review</label><textarea id="rv-body" rows="4" class="mt-1 w-full resize-none rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="Tell us what you thought..."></textarea></div>
+          <button onclick="submitReview(${p.id})" class="mt-4 rounded-full bg-forest px-6 py-2.5 text-sm font-medium text-cream hover:bg-forest-dark transition-colors">Submit Review</button>
+        </div>
+        ${state.submittedReview ? `<div class="mt-4 flex items-center gap-2 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">${icons.check} Thank you! Your review has been posted.</div>` : ''}
+        <div class="mt-10 grid gap-6">
+          ${reviews.length === 0 ? '<p class="text-center text-stone py-10">No reviews yet. Be the first to share your experience!</p>' : reviews.map(r => `
+            <article class="rounded-2xl border border-bone bg-white/50 p-5 sm:p-6">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 items-center justify-center rounded-full bg-forest text-sm font-semibold text-cream">${r.author.charAt(0)}</div>
+                  <div>
+                    <div class="flex items-center gap-2"><span class="font-medium text-charcoal">${r.author}</span>${r.verified ? '<span class="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-700">✓ Verified</span>' : ''}</div>
+                    ${r.location ? `<span class="text-xs text-stone">${r.location}</span>` : ''}
+                  </div>
+                </div>
+                ${stars(r.rating, 'sm')}
+              </div>
+              ${r.title ? `<h4 class="mt-3 font-display text-base text-charcoal">${r.title}</h4>` : ''}
+              <p class="mt-2 text-sm leading-relaxed text-stone">${r.body}</p>
+              <p class="mt-3 text-xs text-stone/60">${new Date(r.date).toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'})}</p>
+            </article>`).join('')}
+        </div>
+      </div>
+    </section>
+    ${related.length > 0 ? `<section class="border-t border-bone bg-cream py-16 lg:py-20"><div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"><h2 class="font-display text-2xl sm:text-3xl text-charcoal">You Might Also Like</h2><div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">${related.map(r => renderProductCard(r)).join('')}</div></div></section>` : ''}
+  </div>`;
+}
+
+// ── Checkout ──
+function renderCheckout() {
+  if (state.cart.length === 0) return `<div class="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center"><div class="flex h-20 w-20 items-center justify-center rounded-full bg-bone/40">${icons.truck}</div><h1 class="mt-5 font-display text-2xl text-charcoal">Your cart is empty</h1><p class="mt-2 text-stone">Add some rellenong bangus before checking out.</p><button onclick="go('shop')" class="mt-6 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-dark">${icons.arrow} Back to Shop</button></div>`;
+  const shipping = cartSubtotal() >= 1500 ? 0 : 150;
+  const total = cartSubtotal() + shipping;
+  return `
+  <div class="bg-cream">
+    <div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <button onclick="go('shop')" class="inline-flex items-center gap-2 text-sm text-stone hover:text-forest">${icons.arrow} Continue shopping</button>
+      <h1 class="mt-4 font-display text-3xl sm:text-4xl text-charcoal">Checkout</h1>
+      <div class="mt-8 grid gap-8 lg:grid-cols-[1fr_400px]">
+        <form onsubmit="placeOrder(event)" class="space-y-8">
+          <fieldset class="rounded-2xl border border-bone bg-white/60 p-5 sm:p-6">
+            <legend class="px-2 font-display text-lg text-charcoal">Contact Information</legend>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <div class="sm:col-span-2"><label class="text-xs font-medium uppercase tracking-wider text-stone">Full Name *</label><input required type="text" name="name" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="Juan Dela Cruz" /></div>
+              <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Email *</label><input required type="email" name="email" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="juan@email.com" /></div>
+              <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Phone</label><input type="tel" name="phone" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="+63 917 123 4567" /></div>
+            </div>
+          </fieldset>
+          <fieldset class="rounded-2xl border border-bone bg-white/60 p-5 sm:p-6">
+            <legend class="px-2 font-display text-lg text-charcoal">Shipping Address</legend>
+            <div class="mt-4 grid gap-4">
+              <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Street Address *</label><input required type="text" name="address" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="123 Rizal Street, Brgy. San Roque" /></div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div><label class="text-xs font-medium uppercase tracking-wider text-stone">City *</label><input required type="text" name="city" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="Quezon City" /></div>
+                <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Postal Code *</label><input required type="text" name="postal" class="mt-1 w-full rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="1100" /></div>
+              </div>
+              <div><label class="text-xs font-medium uppercase tracking-wider text-stone">Order Notes (optional)</label><textarea rows="3" name="notes" class="mt-1 w-full resize-none rounded-lg border border-bone bg-white px-3 py-2.5 text-sm outline-none focus:border-forest" placeholder="Delivery instructions, gift message, etc."></textarea></div>
+            </div>
+          </fieldset>
+          <fieldset class="rounded-2xl border border-bone bg-white/60 p-5 sm:p-6">
+            <legend class="px-2 font-display text-lg text-charcoal">Payment Method</legend>
+            <div class="mt-4 space-y-3">
+              ${[{id:'cod',label:'Cash on Delivery',desc:'Pay when your order arrives',icon:icons.truck},{id:'gcash',label:'GCash',desc:'We\'ll send a payment link to your phone',icon:icons.wallet},{id:'bank',label:'Bank Transfer',desc:'BDO, BPI, or Metrobank',icon:icons.card}].map((m,i) => `<label class="flex cursor-pointer items-center gap-3 rounded-xl border p-4 transition-colors ${i===0?'border-forest bg-forest/5':'border-bone hover:border-forest/50'}"><input type="radio" name="payment" value="${m.id}" ${i===0?'checked':''} class="sr-only" /><div class="flex h-5 w-5 items-center justify-center rounded-full border-2 ${i===0?'border-forest bg-forest':'border-bone'}">${i===0?'<div class="h-2 w-2 rounded-full bg-cream"></div>':''}</div>${m.icon}<div><div class="text-sm font-medium text-charcoal">${m.label}</div><div class="text-xs text-stone">${m.desc}</div></div></label>`).join('')}
+            </div>
+          </fieldset>
+          <button type="submit" class="w-full rounded-full bg-forest px-6 py-4 text-sm font-semibold text-cream hover:bg-forest-dark transition-colors lg:hidden">Place Order · ${fmt(total)}</button>
+        </form>
+        <div class="lg:sticky lg:top-24 lg:self-start">
+          <div class="rounded-2xl border border-bone bg-white/60 p-5 sm:p-6">
+            <h2 class="font-display text-lg text-charcoal">Order Summary</h2>
+            <ul class="mt-4 space-y-3">
+              ${state.cart.map(i => `<li class="flex gap-3"><div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg product-img" style="background: ${i.gradient}"><span style="font-size: 1.5rem">${i.emoji}</span><span class="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-forest px-1 text-[10px] font-bold text-cream">${i.quantity}</span></div><div class="flex flex-1 flex-col"><span class="text-sm font-medium text-charcoal">${i.name}</span><span class="text-xs text-stone">${fmt(i.price)} × ${i.quantity}</span></div><span class="font-display text-sm text-charcoal">${fmt(i.price * i.quantity)}</span></li>`).join('')}
+            </ul>
+            <div class="mt-5 space-y-2 border-t border-bone pt-4">
+              <div class="flex justify-between text-sm"><span class="text-stone">Subtotal</span><span class="text-charcoal">${fmt(cartSubtotal())}</span></div>
+              <div class="flex justify-between text-sm"><span class="text-stone">Shipping</span><span class="text-charcoal">${shipping===0?'Free':fmt(shipping)}</span></div>
+              ${shipping===0?'<p class="text-xs text-green-700">✓ Free delivery unlocked!</p>':''}
+              <div class="flex justify-between border-t border-bone pt-2"><span class="font-display text-base text-charcoal">Total</span><span class="font-display text-xl text-charcoal">${fmt(total)}</span></div>
+            </div>
+            <button onclick="document.querySelector('form').requestSubmit()" class="mt-5 hidden w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-4 text-sm font-semibold text-cream hover:bg-forest-dark transition-colors lg:flex">${icons.shield} Place Order</button>
+            <p class="mt-3 flex items-center justify-center gap-1.5 text-xs text-stone">${icons.shield} Secure checkout · Your data is protected</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Confirmation ──
+function renderConfirmation() {
+  const name = state.checkout.customerName || 'friend';
+  return `
+  <div class="mx-auto max-w-2xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+    <div class="rounded-2xl border border-bone bg-white/60 p-8 text-center sm:p-12 animate-scale-in">
+      <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-50">${icons.check}</div>
+      <h1 class="mt-6 font-display text-3xl sm:text-4xl text-charcoal">Salamat, ${name.split(' ')[0]}!</h1>
+      <p class="mt-3 text-stone">Your order has been received and is being prepared with love.</p>
+      <div class="mt-8 rounded-xl bg-cream-dark p-5 text-left">
+        <div class="flex items-center justify-between"><span class="text-sm text-stone">Order Number</span><span class="font-display text-lg text-charcoal">${state.checkout.orderNumber}</span></div>
+        <div class="mt-3 flex items-center justify-between border-t border-bone pt-3"><span class="text-sm text-stone">Estimated Delivery</span><span class="text-sm font-medium text-charcoal">2–3 business days</span></div>
+      </div>
+      <p class="mt-6 text-sm text-stone">We'll text you when your order ships.</p>
+      <button onclick="go('shop')" class="mt-8 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-dark transition-colors">Continue Shopping ${icons.arrow}</button>
+    </div>
+  </div>`;
+}
+
+// ── Cart Drawer ──
+function renderCartDrawer() {
+  const remaining = Math.max(0, 1500 - cartSubtotal());
+  const progress = Math.min(100, (cartSubtotal() / 1500) * 100);
+  return `
+  <div onclick="toggleCart()" class="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm transition-opacity duration-300 ${state.cartOpen?'opacity-100':'pointer-events-none opacity-0'}"></div>
+  <aside class="fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col bg-cream shadow-2xl transition-transform duration-400 ${state.cartOpen?'translate-x-0':'translate-x-full'}">
+    <div class="flex items-center justify-between border-b border-bone px-5 py-4">
+      <div class="flex items-center gap-2">${icons.bag}<h2 class="font-display text-lg text-charcoal">Your Cart</h2>${cartCount()>0?`<span class="text-sm text-stone">(${cartCount()})</span>`:''}</div>
+      <button onclick="toggleCart()" class="flex h-9 w-9 items-center justify-center rounded-full text-stone hover:bg-bone/50 hover:text-charcoal">${icons.x}</button>
+    </div>
+    ${state.cart.length === 0 ? `
+      <div class="flex flex-1 flex-col items-center justify-center px-6 text-center">
+        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-bone/40">${icons.bag}</div>
+        <h3 class="mt-5 font-display text-xl text-charcoal">Your cart is empty</h3>
+        <p class="mt-2 max-w-xs text-sm text-stone">Looks like you haven't added any rellenong bangus yet. Let's fix that.</p>
+        <button onclick="toggleCart(); go('shop')" class="mt-6 inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-medium text-cream hover:bg-forest-dark">Browse the Shop ${icons.arrow}</button>
+      </div>` : `
+      <div class="border-b border-bone px-5 py-3">
+        ${remaining > 0 ? `<p class="text-xs text-stone">Add <span class="font-semibold text-forest">${fmt(remaining)}</span> more for free delivery in Metro Manila</p>` : '<p class="text-xs font-medium text-forest">✓ You\'ve unlocked free delivery!</p>'}
+        <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-bone/60"><div class="h-full rounded-full bg-gold transition-all duration-500" style="width:${progress}%"></div></div>
+      </div>
+      <div class="flex-1 overflow-y-auto px-5 py-4 scrollbar-hide">
+        <ul class="space-y-4">
+          ${state.cart.map(i => `
+            <li class="flex gap-3">
+              <button onclick="go('product', ${i.productId})" class="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg product-img" style="background: ${i.gradient}"><span style="font-size: 2rem">${i.emoji}</span></button>
+              <div class="flex flex-1 flex-col">
+                <div class="flex items-start justify-between gap-2">
+                  <button onclick="go('product', ${i.productId})" class="font-display text-sm leading-tight text-charcoal text-left hover:text-forest">${i.name}</button>
+                  <button onclick="removeFromCart(${i.productId})" class="text-stone hover:text-red-600">${icons.trash}</button>
+                </div>
+                <p class="mt-0.5 text-xs text-stone">${fmt(i.price)} each</p>
+                <div class="mt-auto flex items-center justify-between pt-2">
+                  <div class="flex items-center rounded-full border border-bone bg-white">
+                    <button onclick="updateQty(${i.productId}, ${i.quantity-1})" class="flex h-8 w-8 items-center justify-center text-stone hover:text-forest">${icons.minus}</button>
+                    <span class="min-w-8 text-center text-sm font-medium">${i.quantity}</span>
+                    <button onclick="updateQty(${i.productId}, ${i.quantity+1})" class="flex h-8 w-8 items-center justify-center text-stone hover:text-forest">${icons.plus}</button>
+                  </div>
+                  <span class="font-display text-sm text-charcoal">${fmt(i.price * i.quantity)}</span>
+                </div>
+              </div>
+            </li>`).join('')}
+        </ul>
+      </div>
+      <div class="border-t border-bone px-5 py-4">
+        <div class="flex items-center justify-between"><span class="text-sm text-stone">Subtotal</span><span class="font-display text-xl text-charcoal">${fmt(cartSubtotal())}</span></div>
+        <p class="mt-1 text-xs text-stone">Shipping and taxes calculated at checkout.</p>
+        <button onclick="toggleCart(); go('checkout')" class="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-forest px-6 py-3.5 text-sm font-medium text-cream hover:bg-forest-dark transition-colors">Checkout ${icons.arrow}</button>
+        <button onclick="toggleCart()" class="mt-2 w-full text-center text-xs text-stone hover:text-forest hover:underline">Continue shopping</button>
+      </div>`}
+  </aside>`;
+}
+
+// ── Footer ──
+function renderFooter() {
+  return `
+  <footer class="mt-24 border-t border-bone bg-forest-dark text-cream/80">
+    <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+      <div class="grid gap-12 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div>
+          <button onclick="go('home')" class="inline-block">
+            <span class="font-display text-2xl text-cream">Illiana's</span>
+            <span class="ml-2 font-serif text-sm tracking-[0.3em] text-gold uppercase">Rellenong Bangus</span>
+          </button>
+          <p class="mt-4 max-w-xs text-sm leading-relaxed text-cream/60">Three generations of Filipino home cooking, hand-stuffed into every milkfish. Made fresh in Malabon, delivered with love.</p>
+          <div class="mt-6 flex gap-3">
+            ${[icons.camera, icons.globe, icons.mail].map(ic => `<a href="#" class="flex h-9 w-9 items-center justify-center rounded-full border border-cream/20 transition-colors hover:border-gold hover:text-gold">${ic}</a>`).join('')}
+          </div>
+        </div>
+        <div>
+          <h3 class="font-display text-sm uppercase tracking-[0.2em] text-gold">Shop</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li><button onclick="go('shop')" class="hover:text-gold transition-colors">All Products</button></li>
+            <li><button onclick="setShopFilter('category','Whole Fish'); go('shop')" class="hover:text-gold transition-colors">Whole Fish</button></li>
+            <li><button onclick="setShopFilter('category','Lumpia & Snacks'); go('shop')" class="hover:text-gold transition-colors">Lumpia & Snacks</button></li>
+            <li><button onclick="setShopFilter('category','Gift Sets'); go('shop')" class="hover:text-gold transition-colors">Gift Sets</button></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-display text-sm uppercase tracking-[0.2em] text-gold">Our Story</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li><a href="#story" class="hover:text-gold transition-colors">The Family Recipe</a></li>
+            <li><a href="#story" class="hover:text-gold transition-colors">How It's Made</a></li>
+            <li><a href="#story" class="hover:text-gold transition-colors">Sourcing</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-display text-sm uppercase tracking-[0.2em] text-gold">Get in Touch</h3>
+          <ul class="mt-4 space-y-3 text-sm">
+            <li class="flex items-start gap-2">${icons.pin}<span>27 Rizal St., Malabon, Metro Manila</span></li>
+            <li class="flex items-center gap-2">${icons.phone}<a href="tel:+63285551234" class="hover:text-gold transition-colors">+63 2 8555 1234</a></li>
+            <li class="flex items-center gap-2">${icons.mail}<a href="mailto:hello@illianas.ph" class="hover:text-gold transition-colors">hello@illianas.ph</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-12 flex flex-col items-center justify-between gap-4 border-t border-cream/10 pt-6 text-xs text-cream/50 sm:flex-row">
+        <p>© ${new Date().getFullYear()} Illiana's Rellenong Bangus. All rights reserved.</p>
+        <div class="flex gap-6"><a href="#" class="hover:text-gold">Privacy</a><a href="#" class="hover:text-gold">Terms</a><a href="#" class="hover:text-gold">Shipping</a></div>
+      </div>
+    </div>
+  </footer>`;
+}
+
+// ─────────────────────────────────────────────
+// EVENT BINDING
+// ─────────────────────────────────────────────
+function bindEvents() {
+  // Nothing needed — all events use onclick handlers
+}
+
+// ── Navigation ──
+function go(view, productId = null) {
+  state.view = view;
+  if (productId) state.activeProduct = PRODUCTS.find(p => p.id === productId) || null;
+  if (view === 'checkout') state.checkout.step = 1;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+function toggleCart() {
+  state.cartOpen = !state.cartOpen;
+  if (state.cartOpen) document.body.style.overflow = 'hidden';
+  else document.body.style.overflow = '';
+  render();
+}
+
+function setShopFilter(key, value) {
+  state.shopFilters[key] = value;
+}
+
+function toggleTag(tag) {
+  const idx = state.shopFilters.tags.indexOf(tag);
+  if (idx >= 0) state.shopFilters.tags.splice(idx, 1);
+  else state.shopFilters.tags.push(tag);
+  render();
+}
+
+let productQty = {};
+function getQty(id) { return productQty[id] || 1; }
+function changeQty(id, delta) {
+  const cur = getQty(id);
+  const next = Math.max(1, cur + delta);
+  productQty[id] = next;
+  const el = document.getElementById(`qty-${id}`);
+  if (el) el.textContent = next;
+}
+
+let reviewRating = 5;
+function setReviewStar(s) {
+  reviewRating = s;
+  document.querySelectorAll('#rv-stars button').forEach(btn => {
+    const star = parseInt(btn.dataset.star);
+    btn.querySelector('svg').style.color = star <= s ? '#c9a961' : '#e7e0d3';
+  });
+}
+
+function toggleReviewForm() {
+  const form = document.getElementById('review-form');
+  if (form) form.classList.toggle('hidden');
+}
+
+function submitReview(productId) {
+  const author = document.getElementById('rv-author')?.value;
+  const title = document.getElementById('rv-title')?.value;
+  const body = document.getElementById('rv-body')?.value;
+  if (!author || !title || !body) return;
+  if (!REVIEWS[productId]) REVIEWS[productId] = [];
+  REVIEWS[productId].unshift({ author, location: 'Philippines', rating: reviewRating, title, body, verified: false, date: new Date().toISOString().split('T')[0] });
+  state.submittedReview = true;
+  render();
+  setTimeout(() => { state.submittedReview = false; }, 4000);
+}
+
+function placeOrder(e) {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  state.checkout.customerName = fd.get('name');
+  state.checkout.orderNumber = 'ILL-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+  state.cart = [];
+  localStorage.removeItem('illiana-cart');
+  state.view = 'confirmation';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+}
+
+// ── Init ──
+render();
+</script>
+</body>
+</html>
